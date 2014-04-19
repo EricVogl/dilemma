@@ -1,4 +1,4 @@
-require "./strategy.rb"
+require_relative "strategy"
 
 class Processor
   def initialize(strategy)

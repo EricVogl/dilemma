@@ -1,8 +1,12 @@
-require "./strategy.rb"
+require_relative "strategy"
 
 class RandomStrategy < Strategy
+  def initialize(opponentName)
+    super(opponentName)
+    @rnd = Random.new
+  end
   def doTurn
-    choice = Random.rand(1)
+    choice = @rnd.rand(0..1)
     case choice
       when 0
         return "C"
