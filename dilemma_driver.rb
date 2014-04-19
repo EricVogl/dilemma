@@ -2,76 +2,95 @@
 
 require 'open3'
 
-$driver_pts = 0
-$prog_pts = 0
-$all_sab = true
+$p2_pts = 0
+$p1_pts = 0
+$all_sab1 = true
+$all_sab2 = true
+$tie_breaker_rounds = 0
 
-def do_rounds(round, p_in, p_out)
+def do_rounds(round, p_in1, p_out1, p_in2, p_out2)
   1.upto(round) do |i|
     puts "< turn"
-    p_in.puts "turn"
+    p_in1.puts "turn"
+    p_in2.puts "turn"
 
-    i = p_out.gets.chomp
-    puts "> #{i}"
+    i1 = p_out1.gets.chomp
+    puts "p1 > #{i1}"
 
-    o = (rand(1..2) == 1 ? "C" : "S")
-    puts "< #{o}"
-    p_in.puts o
+    i2 = p_out2.gets.chomp
+    puts "p2 > #{i2}"
 
-    if (i == "C" && o == "C")
-      $driver_pts += 2
-      $prog_pts += 2
-      $all_sab = false
-    elsif (i == "S" && o == "S")
-      $driver_pts += 1
-      $prog_pts += 1
-    elsif (i == "C")
-      $driver_pts += 3
-      $prog_pts += 0
-      $all_sab = false
+    p_in1.puts i2
+    p_in2.puts i1
+
+
+    if (i1 == "C" && i2 == "C")
+      $p1_pts += 2
+      $p2_pts += 2
+      $all_sab1 = false
+      $all_sab2 = false
+    elsif (i1 == "S" && i2 == "S")
+      $p1_pts += 1
+      $p2_pts += 1
+    elsif (i1 == "C")
+      $p2_pts += 3
+      $p1_pts += 0
+      $all_sab1 = false
     else
-      $driver_pts += 0
-      $prog_pts += 3
+      $p2_pts += 0
+      $p1_pts += 3
+      $all_sab2 = false
     end
   end
 end
 
 puts "Simple Driver program - Dilemma"
 
-if (ARGV.length == 0)
-  puts "usage: dilemma_driver.rb command"
+if (ARGV.length != 4)
+  puts "usage: dilemma_driver.rb command1 name1 command2 name2"
   exit
 end
 
-puts "Starting program #{ARGV[0]} dilemma_driver"
-Open3.popen3("#{ARGV[0]} dilemma_driver") do |p_in, p_out, p_err|
-  round = rand(25..75)
-  puts "Running #{round} rounds"
-  do_rounds(round, p_in, p_out)
+puts "Starting program #{ARGV[0]} #{ARGV[3]}"
+Open3.popen3("#{ARGV[0]} #{ARGV[3]}") do |p_in1, p_out1, p_err1|
+  puts "Starting program #{ARGV[2]} #{ARGV[1]}"
+  Open3.popen3("#{ARGV[2]} #{ARGV[1]}") do |p_in2, p_out2, p_err2|
+    round = rand(25..75)
+    puts "Running #{round} rounds"
+    do_rounds(round, p_in1, p_out1, p_in2, p_out2)
 
-  puts "Driver Program scored #{$driver_pts}"
-  puts "User Program scored #{$prog_pts}"
+    puts "#{ARGV[1]} Program scored #{$p1_pts}"
+    puts "#{ARGV[3]} Program scored #{$p2_pts}"
 
-  while ($driver_pts == $prog_pts)
-    round = rand(10..20)
-    puts "Tie game - Tie breaker - #{round} rounds"
-    $all_sab = true
-    do_rounds(round, p_in, p_out)
+    while (($p1_pts == $p2_pts) and ($tie_breaker_rounds < 3))
+      round = rand(10..20)
+      puts "Tie game - Tie breaker - #{round} rounds"
+      $all_sab = true
+      do_rounds(round, p_in1, p_out1, p_in2, p_out2)
 
-    puts "Driver Program scored #{$driver_pts}"
-    puts "User Program scored #{$prog_pts}"
+      puts "#{ARGV[1]} Program scored #{$p1_pts}"
+      puts "#{ARGV[3]} Program scored #{$p2_pts}"
 
-    if ($all_sab)
-      puts "User program sabotaged ALL tie rounds. User loses."
-      exit
+      if ($all_sab1)
+        puts "#{ARGV[1]} program sabotaged ALL tie rounds."
+        $p1_pts = 0
+      end
+      if ($all_sab2)
+        puts "#{ARGV[3]} program sabotaged ALL tie rounds."
+        $p2_pts = 0
+      end
+      $tie_breaker_rounds = $tie_breaker_rounds + 1
     end
-  end
-  p_in.puts "quit"
+    p_in1.puts "quit"
+    p_in2.puts "quit"
 
-  if ($driver_pts > $prog_pts)
-    puts "Driver program wins."
-  else
-    puts "User program wins."
+    if (($p1_pts == 0 and $p2_pts == 0) or (($p1_pts == $p2_pts) and $tie_breaker_rounds >= 3))
+      puts "Both lose"
+    elsif ($p1_pts > $p2_pts)
+      puts "#{ARGV[1]} program wins."
+    else
+      puts "#{ARGV[3]} program wins."
+    end
   end
 end
 
