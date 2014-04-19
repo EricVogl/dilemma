@@ -6,7 +6,7 @@ class Processor
   end
 
   def process
-    until ((input = STDIN.gets.chomp) == "quit")
+    until ((input = $stdin.gets.chomp) == "quit")
       if (input == "turn")
         processTurn
       elsif
@@ -18,8 +18,9 @@ class Processor
   private
   def processTurn
     turn = @strategy.doTurn
-    STDOUT.puts turn
-    input = STDIN.gets.chomp
+    $stdout.puts turn
+    $stdout.flush
+    input = $stdin.gets.chomp
 
     if (input == "C")
       @strategy.opponentCooperate
