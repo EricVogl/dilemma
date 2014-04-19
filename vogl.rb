@@ -13,7 +13,7 @@ if (ARGV.length > 0)
   opponentName = ARGV[0].chomp
 end
 
-strategy = Strategy.new(opponentName)
+strategy = Strategy.any(opponentName)
 if (ARGV.length > 1)
   strategy = Strategy.of(ARGV[1], opponentName)
 end

@@ -22,20 +22,11 @@ class OppositeStrategy < Strategy
   end
 
 private
-  def getRandomMove
-    choice = @rnd.rand(0..1)
-    case choice
-      when 0
-        return "C"
-      when 1
-        return "S"
+  def getOpposite
+    if ("C" == @last)
+      return "S"
     end
-
-    def getOpposite
-      if ("C" == @last)
-        return "S"
-      end
-      return "C"
-    end
+    return "C"
   end
+
 end

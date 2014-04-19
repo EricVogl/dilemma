@@ -20,15 +20,4 @@ class SameStrategy < Strategy
   def opponentSabotage
     @last = "S"
   end
-
-private
-  def getRandomMove
-    choice = @rnd.rand(0..1)
-    case choice
-      when 0
-        return "C"
-      when 1
-        return "S"
-    end
-  end
 end
