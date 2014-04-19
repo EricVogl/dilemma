@@ -9,6 +9,8 @@ require_relative "sabotage_strategy"
 require_relative "cooperate_strategy"
 require_relative "pavlov_strategy"
 require_relative "tit_for_tat_strategy"
+require_relative "jerk_strategy"
+require_relative "super_jerk_strategy"
 
 opponentName = ""
 if (ARGV.length > 0)
