@@ -1,11 +1,11 @@
 require_relative "strategy"
 
-class SameStrategy < Strategy
-  register "same"
+class TitForTatStrategy < Strategy
+  register "titfortat"
 
   def initialize(opponentName)
     super(opponentName)
-    @last = getRandomMove
+    @last = "C"
   end
 
   def doTurn
@@ -19,4 +19,13 @@ class SameStrategy < Strategy
   def opponentSabotage
     @last = "S"
   end
+
+private
+  def getOpposite
+    if ("C" == @last)
+      return "S"
+    end
+    return "C"
+  end
+
 end

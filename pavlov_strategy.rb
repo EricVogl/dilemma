@@ -1,23 +1,31 @@
 require_relative "strategy"
 
-class OppositeStrategy < Strategy
-  register "opposite"
+class PavlovStrategy < Strategy
+  register "pavlov"
 
   def initialize(opponentName)
     super(opponentName)
-    @last = getRandomMove
+    @opponentLast = "C"
+    @myLast = "C"
   end
 
   def doTurn
-    return getOpposite
+
+    if (@myLast == @opponentLast)
+      @myLast = "C"
+      return "C"
+    else
+      @myLast = "S"
+      return "S"
+    end
   end
 
   def opponentCooperate
-    @last = "C"
+    @opponentLast = "C"
   end
 
   def opponentSabotage
-    @last = "S"
+    @opponentLast = "S"
   end
 
 private
